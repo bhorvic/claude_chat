@@ -2,7 +2,7 @@
 from anthropic import Anthropic
 
 anthropic = Anthropic(
-    api_key='API_KEY'
+    api_key='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'
 )
 def main():    
     while True:

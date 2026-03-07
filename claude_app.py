@@ -66,8 +66,8 @@ def chat():
         session['session_id'] = os.urandom(16).hex()
     
     chat_history = get_or_create_history(session['session_id'])
-    chat_history.append({'type': 'user', 'text': user_input})
     bot_response = get_bot_response(user_input, chat_history)
+    chat_history.append({'type': 'user', 'text': user_input})
     chat_history.append({'type': 'bot', 'text': bot_response})
 
     return redirect(url_for('home'))

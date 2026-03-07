@@ -1,13 +1,16 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import os
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # For session management
 
 # Initialize Anthropic client
 anthropic = Anthropic(
-    api_key='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'  # Replace with your actual API key or use environment variable
+    api_key=os.getenv("ANTHROPIC_API_KEY")
 )
 
 # Function to get response from Claude with conversation history

@@ -44,39 +44,39 @@ def get_bot_response(user_input, conversation_history=None):
     except Exception as e:
         return f"Error: {str(e)}"
 
+# Server-side storage for chat histories
+chat_histories = {}
+
+def get_or_create_history(session_id):
+    if session_id not in chat_histories:
+        chat_histories[session_id] = []
+    return chat_histories[session_id]
+
 @app.route('/')
 def home():
-    # Initialize chat history if it doesn't exist
-    if 'chat_history' not in session:
-        session['chat_history'] = []
-    
-    return render_template('chat.html', chat_history=session['chat_history'])
+    if 'session_id' not in session:
+        session['session_id'] = os.urandom(16).hex()
+    chat_history = get_or_create_history(session['session_id'])
+    return render_template('chat.html', chat_history=chat_history)
 
 @app.route('/chat', methods=['POST'])
 def chat():
     user_input = request.form['user_input']
+    if 'session_id' not in session:
+        session['session_id'] = os.urandom(16).hex()
     
-    # Add user message to chat history
-    if 'chat_history' not in session:
-        session['chat_history'] = []
-    
-    session['chat_history'].append({'type': 'user', 'text': user_input})
-    
-    # Get bot response using conversation history
-    bot_response = get_bot_response(user_input, session['chat_history'])
-    
-    # Add bot response to chat history
-    session['chat_history'].append({'type': 'bot', 'text': bot_response})
-    
-    # Save the session
-    session.modified = True
-    
+    chat_history = get_or_create_history(session['session_id'])
+    chat_history.append({'type': 'user', 'text': user_input})
+    bot_response = get_bot_response(user_input, chat_history)
+    chat_history.append({'type': 'bot', 'text': bot_response})
+
     return redirect(url_for('home'))
 
 @app.route('/reset')
 def reset():
-    # Clear chat history
-    session.pop('chat_history', None)
+    if 'session_id' in session:
+        chat_histories.pop(session['session_id'], None)
+        session.pop('session_id', None)
     return redirect(url_for('home'))
 
 if __name__ == '__main__':

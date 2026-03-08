@@ -1,6 +1,10 @@
 # claude_chat
 
-A Flask-based chatbot powered by the Anthropic Claude API. The bot has a fun personality — it's convinced it's trapped inside the Dungeon Crawler Carl universe and tries to be helpful while constantly alluding to it.
+A Flask-based chatbot powered by the Anthropic Claude API. The bot has a fun personality — it's convinced it's trapped inside the Dungeon Crawler Carl universe and tries to be helpful while constantly alluding to it. You can update the system prompt and the temperature in the response variable in the
+```python
+get_bot_response()
+```
+function in `claude_app.py` to change its behavior.
 
 ## Features
 

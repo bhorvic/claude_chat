@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 import os
 from anthropic import Anthropic
 from dotenv import load_dotenv
@@ -78,6 +78,19 @@ def reset():
         chat_histories.pop(session['session_id'], None)
         session.pop('session_id', None)
     return redirect(url_for('home'))
+
+@app.route('/chat_ajax', methods=['POST'])
+def chat_ajax():
+    user_input = request.form['user_input']
+    if 'session_id' not in session:
+        session['session_id'] = os.urandom(16).hex()
+    
+    chat_history = get_or_create_history(session['session_id'])
+    bot_response = get_bot_response(user_input, chat_history)
+    chat_history.append({'type': 'user', 'text': user_input})
+    chat_history.append({'type': 'bot', 'text': bot_response})
+
+    return jsonify({'response': bot_response})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -34,7 +34,7 @@ function in `claude_app.py` to change its behavior.
 
 3. **Install dependencies**
    ```bash
-   pip install flask anthropic python-dotenv
+   pip install -r requirements.txt
    ```
 
 4. **Create a `.env` file** with your Anthropic API key

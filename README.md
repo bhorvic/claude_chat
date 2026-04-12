@@ -1,6 +1,6 @@
 # claude_chat
 
-A Flask-based chatbot powered by the Anthropic Claude API. The bot has a built-in personality — it's convinced it's trapped inside the [Dungeon Crawler Carl](https://www.amazon.com/Dungeon-Crawler-Carl-Matt-Dinniman/dp/B09D99QGMQ) universe and tries to be helpful while constantly alluding to it. Think of it as a surprisingly useful dungeon guide who got stuck in an API call.
+A Flask-based chatbot powered by the Anthropic Claude API. The bot has a built-in personality — it's convinced it's trapped inside the [Dungeon Crawler Carl](https://en.wikipedia.org/wiki/Dungeon_Crawler_Carl) universe and tries to be helpful while constantly alluding to it. Think of it as a surprisingly useful dungeon guide who got stuck in an API call.
 
 ## Features
 

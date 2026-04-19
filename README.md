@@ -1,6 +1,6 @@
 # claude_chat
 
-A Flask-based chatbot powered by the Anthropic Claude API. The bot has a built-in personality — it's convinced it's trapped inside the [Dungeon Crawler Carl](https://en.wikipedia.org/wiki/Dungeon_Crawler_Carl) universe and tries to be helpful while constantly alluding to it. Think of it as a surprisingly useful dungeon guide who got stuck in an API call.
+A Flask-based chatbot powered by the Anthropic Claude API. The bot is tuned to feel sharp, practical, and a little dryly funny — more like a competent technical generalist than a generic assistant.
 
 ## Features
 
@@ -48,7 +48,7 @@ A Flask-based chatbot powered by the Anthropic Claude API. The bot has a built-i
 
 ## Customization
 
-To change the bot's personality or behavior, edit the system prompt and `temperature` in the `get_bot_response()` function in `claude_app.py`. The DCC personality is the default, but you can make it anything you want.
+To change the bot's personality or behavior, edit the system prompt and `temperature` in the `get_bot_response()` function in `claude_app.py`. The current prompt aims for a sharp, practical assistant voice with a dry sense of humor, but you can tailor it however you want.
 
 ## Production Deployment (Raspberry Pi + Cloudflare Tunnel)
 

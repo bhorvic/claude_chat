@@ -6,6 +6,7 @@ A Flask-based chatbot powered by the Anthropic Claude API. The bot is tuned to f
 
 - Conversational chat interface with full message history
 - Powered by Claude Sonnet via the Anthropic API
+- Optional web search mode backed by Brave Search
 - Server-side session management (no bloated cookies)
 - Clean, minimal web UI
 - Easy to customize — swap the personality by editing the system prompt
@@ -39,6 +40,11 @@ A Flask-based chatbot powered by the Anthropic Claude API. The bot is tuned to f
    ANTHROPIC_API_KEY=your-api-key-here
    ```
 
+   Optional: add a Brave Search API key to enable web search in the UI
+   ```
+   BRAVE_API_KEY=your-brave-key-here
+   ```
+
 5. **Run the app**
    ```bash
    python3 claude_app.py
@@ -49,6 +55,8 @@ A Flask-based chatbot powered by the Anthropic Claude API. The bot is tuned to f
 ## Customization
 
 To change the bot's personality or behavior, edit the system prompt and `temperature` in the `get_bot_response()` function in `claude_app.py`. The current prompt aims for a sharp, practical assistant voice with a dry sense of humor, but you can tailor it however you want.
+
+The chat UI also includes an **Enable web search** toggle. When turned on, the app can use Brave Search for current information. This may increase both response time and API cost.
 
 ## Production Deployment (Raspberry Pi + Cloudflare Tunnel)
 

@@ -381,10 +381,41 @@
             box-shadow: none;
         }
 
+        .input-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+        }
+
+        .search-toggle input {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .search-note {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0.04em;
+        }
+
         .input-hint {
             font-size: 11px;
             color: var(--text-dim);
-            margin-top: 8px;
             font-family: 'Space Mono', monospace;
             letter-spacing: 0.04em;
         }
@@ -444,7 +475,14 @@
                 </div>
                 <button type="submit" class="send-btn" id="send-btn">Send</button>
             </form>
-            <div class="input-hint">Press Enter to send</div>
+            <div class="input-options">
+                <label class="search-toggle" for="search-enabled">
+                    <input type="checkbox" id="search-enabled" name="search_enabled" form="message-form" {% if search_enabled %}checked{% endif %}>
+                    Enable web search
+                </label>
+                <div class="search-note">May increase response time and API cost</div>
+                <div class="input-hint">Press Enter to send</div>
+            </div>
         </div>
     </div>
 
@@ -475,6 +513,7 @@
         const sendBtn = document.getElementById('send-btn');
         const typingIndicator = document.getElementById('typing-indicator');
         const messagesContainer = document.getElementById('chat-messages');
+        const searchToggle = document.getElementById('search-enabled');
 
         let isSubmitting = false;
 
@@ -502,6 +541,9 @@
             try {
                 const formData = new FormData();
                 formData.append('user_input', text);
+                if (searchToggle && searchToggle.checked) {
+                    formData.append('search_enabled', 'on');
+                }
 
                 const response = await fetch(form.action || '/chat_ajax', {
                     method: 'POST',

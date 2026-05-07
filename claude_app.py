@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # For session management
+app.secret_key = os.getenv("FLASK_SECRET_KEY") or os.urandom(24)  # For session management
 
 # Initialize Anthropic client
 anthropic = Anthropic(
@@ -52,6 +52,13 @@ def get_or_create_history(session_id):
         chat_histories[session_id] = []
     return chat_histories[session_id]
 
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
 @app.route('/')
 def home():
     if 'session_id' not in session:
@@ -61,7 +68,10 @@ def home():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_input = request.form['user_input']
+    user_input = request.form.get('user_input', '').strip()
+    if not user_input:
+        return redirect(url_for('home'))
+
     if 'session_id' not in session:
         session['session_id'] = os.urandom(16).hex()
     
@@ -81,7 +91,10 @@ def reset():
 
 @app.route('/chat_ajax', methods=['POST'])
 def chat_ajax():
-    user_input = request.form['user_input']
+    user_input = request.form.get('user_input', '').strip()
+    if not user_input:
+        return jsonify({'error': 'Empty message'}), 400
+
     if 'session_id' not in session:
         session['session_id'] = os.urandom(16).hex()
     
@@ -93,4 +106,5 @@ def chat_ajax():
     return jsonify({'response': bot_response})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+    app.run(host='0.0.0.0', port=5000, debug=debug_mode)

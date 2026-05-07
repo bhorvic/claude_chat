@@ -430,7 +430,7 @@
         </div>
 
         <div class="message-input-area">
-            <form class="input-form" id="message-form" action="/chat_ajax" method="post">
+            <form class="input-form" id="message-form" action="/chat" method="post">
                 <div class="input-wrapper">
                     <input
                         type="text"
@@ -449,17 +449,32 @@
     </div>
 
     <script>
-        // Configure marked
-        marked.setOptions({ breaks: true, gfm: true });
+        const markdownAvailable = typeof marked !== 'undefined';
+        if (markdownAvailable) {
+            marked.setOptions({ breaks: true, gfm: true });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(text));
+            return div.innerHTML;
+        }
+
+        function renderMessage(text) {
+            if (markdownAvailable) {
+                return marked.parse(text || '');
+            }
+            return escapeHtml(text || '').replace(/\n/g, '<br>');
+        }
 
         // Render markdown for all bot messages on load
         document.querySelectorAll('.bot-bubble[data-markdown]').forEach(el => {
-            el.innerHTML = marked.parse(el.getAttribute('data-markdown'));
+            el.innerHTML = renderMessage(el.getAttribute('data-markdown'));
         });
 
         // Also render the initial greeting
         document.querySelectorAll('.bot-bubble:not([data-markdown])').forEach(el => {
-            el.innerHTML = marked.parse(el.textContent.trim());
+            el.innerHTML = renderMessage(el.textContent.trim());
         });
 
         // Scroll to bottom
@@ -503,7 +518,7 @@
                 const formData = new FormData();
                 formData.append('user_input', text);
 
-                const response = await fetch(form.action || '/chat_ajax', {
+                const response = await fetch('/chat_ajax', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -511,11 +526,10 @@
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Request failed with status ${response.status}`);
-                }
-
                 const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || `Request failed with status ${response.status}`);
+                }
 
                 // Hide typing indicator
                 typingIndicator.classList.remove('visible');
@@ -525,7 +539,7 @@
                 botRow.className = 'message-row bot';
                 const botBubble = document.createElement('div');
                 botBubble.className = 'message-bubble bot-bubble';
-                botBubble.innerHTML = marked.parse(data.response || 'No response received.');
+                botBubble.innerHTML = renderMessage(data.response || 'No response received.');
                 botRow.innerHTML = `<div class="message-label">Assistant</div>`;
                 botRow.appendChild(botBubble);
                 messagesContainer.insertBefore(botRow, typingIndicator);
@@ -535,7 +549,7 @@
                 typingIndicator.classList.remove('visible');
                 const errRow = document.createElement('div');
                 errRow.className = 'message-row bot';
-                errRow.innerHTML = `<div class="message-label">Assistant</div><div class="message-bubble bot-bubble">Something went wrong. Please try again.</div>`;
+                errRow.innerHTML = `<div class="message-label">Assistant</div><div class="message-bubble bot-bubble">${escapeHtml(err.message || 'Something went wrong. Please try again.')}</div>`;
                 messagesContainer.insertBefore(errRow, typingIndicator);
             } finally {
                 isSubmitting = false;
@@ -547,19 +561,6 @@
 
         form.addEventListener('submit', handleSubmit);
 
-        // Enter to submit
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-            }
-        });
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.appendChild(document.createTextNode(text));
-            return div.innerHTML;
-        }
     </script>
 </body>
 </html>
